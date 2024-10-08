@@ -16,9 +16,9 @@ def get_dataset(config):
     
     loader_config = config['DATASET']['dataloader']
     
-    train_dataset = data_dict[dataset_name](root=config['DATASET']['root'], 
+    train_dataset = data_dict[dataset_name](root=config['DATASET']['data_root'], 
                                             train=True, download=True)
-    test_dataset = data_dict[dataset_name](root=config['DATASET']['root'],
+    test_dataset = data_dict[dataset_name](root=config['DATASET']['data_root'],
                                              train=False, download=True)
     
     loader_config['shuffle'] = True
@@ -30,5 +30,6 @@ def get_dataset(config):
     test_active_dataset = ActiveLearningDataset(samples=test_dataset.data,
                                                 targets=test_dataset.targets,
                                                 dataloader_config=loader_config)
+    test_active_dataset.add_label(test_active_dataset.get_unlabeled_index())
     
     return train_active_dataset, test_active_dataset

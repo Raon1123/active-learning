@@ -1,0 +1,33 @@
+DEVICE: cuda:0
+
+DATASET:
+  data_root: data
+  dataset: cifar10
+  dataloader:
+    batch_size: 128
+    num_workers: 4
+    pin_memory: True
+
+MODEL:
+  model: mlp
+  model_config:
+   dims: [3072, 100, 10]
+   activation: relu
+   dropout: 0.5
+  optimizer: adam
+  optimizer_config:
+    lr: 0.001
+    betas: [0.9, 0.999]
+  epoch_per_round: 1000
+  num_round: 10
+
+SAMPLER:
+  sampler: random
+  n_samples: 1000
+
+LOGGING:
+  logger: wandb
+  log_dir: logs
+  project: active_learning
+  postfix: init
+  test_every: 1000
