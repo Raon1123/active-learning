@@ -24,11 +24,11 @@ def get_model(config):
 
 
 def get_optimizer(config, model):
-    optimizer_name = config['OPTIMIZER']['optimizer']
+    optimizer_name = config['MODEL']['optimizer']
     
     assert optimizer_name in optim_dict, f"Optimizer {optimizer_name} not found"
     
-    optimizer_config = config['OPTIMIZER']['optimizer_config']
+    optimizer_config = config['MODEL']['optimizer_config']
     optimizer = optim_dict[optimizer_name](model.parameters(), **optimizer_config)
     
     return optimizer
