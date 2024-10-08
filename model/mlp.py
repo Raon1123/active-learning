@@ -6,6 +6,12 @@ from typing import (
 import torch
 from torch import nn
 
+activation_dict = {
+    'relu': nn.ReLU,
+    'tanh': nn.Tanh,
+    'sigmoid': nn.Sigmoid,
+}
+
 # Multi-layer perceptron
 class MLP(nn.Module):
     def __init__(self, 
@@ -27,16 +33,20 @@ class MLP(nn.Module):
         """
         super(MLP, self).__init__()
         
-        module_list = []
+        if isinstance(activation, str):
+            assert activation in activation_dict, f"Activation {activation} not found"
+            activation = activation_dict[activation]()
+        
+        modules = []
         
         for in_dim, out_dim in zip(dims[:-1], dims[1:]):
-            module_list.append(nn.Linear(in_dim, out_dim))
+            modules.append(nn.Linear(in_dim, out_dim))
             if activation is not None:
-                module_list.append(activation)
+                modules.append(activation)
             if dropout is not None:
-                module_list.append(nn.Dropout(dropout))
+                modules.append(nn.Dropout(dropout))
         
-        self.model = nn.Sequential(module_list) 
+        self.model = nn.Sequential(*modules)
         
     def forward(self, x):
         return self.model(x)
@@ -46,4 +56,7 @@ class MLP(nn.Module):
     
     def predict_proba(self, x):
         return torch.softmax(self.forward(x), dim=1)
+    
+    def loss(self, output, target):
+        return nn.CrossEntropyLoss()(output, target)
     
