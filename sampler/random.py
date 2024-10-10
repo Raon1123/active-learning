@@ -11,7 +11,8 @@ class RandomSampler():
     
     def sample(self, 
                dataset, 
-               n_samples: int) -> List[int]:
+               n_samples: int,
+               **kwargs) -> List[int]:
         r"""Randomly sample data from the dataset.
         """
         unlabel_data = dataset.get_unlabeled_index()
