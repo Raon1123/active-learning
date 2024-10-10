@@ -11,11 +11,18 @@ from model.modeltool import (
 from sampler.random import (
     RandomSampler
 )
+
 from toolkits.epochs import run_round
+from toolkits.logging import (
+    init_logger,
+    log_scalar,
+    log_index
+)
 from toolkits.toolkit import (
     is_path,
     load_config
 )
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="Active Learning framework")
@@ -35,6 +42,8 @@ def get_args():
 def main():
     args = get_args()
     config = load_config(args.config)
+    verbose = args.verbose
+    writer, log_dir = init_logger(config)
     
     train_dataset, test_dataset = get_dataset(config)
     model = get_model(config).to(config['DEVICE'])
@@ -54,8 +63,14 @@ def main():
         train_loss, test_loss, test_acc = run_round(train_loader, test_loader, 
                         model, optimizer, config)
         
-        print(f"Round {round+1}: Train Loss: {train_loss}, Test Loss: {test_loss}, Test Accuracy: {test_acc}")
-        print(f"Sampled indices: {sample_idx}")
+        if writer:
+            log_scalar(writer, 'train_loss', train_loss, round)
+            log_scalar(writer, 'test_loss', test_loss, round)
+            log_scalar(writer, 'test_acc', test_acc, round)
+            log_index(sample_idx, round, log_dir)
+        
+        if verbose:
+            print(f"Round {round+1}: Train Loss: {train_loss}, Test Loss: {test_loss}, Test Accuracy: {test_acc}")
     
 if __name__ == "__main__":
     main()
