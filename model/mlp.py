@@ -49,6 +49,7 @@ class MLP(nn.Module):
         self.model = nn.Sequential(*modules)
         
     def forward(self, x):
+        x = x.view(x.size(0), -1)
         return self.model(x)
     
     def predict(self, x):
