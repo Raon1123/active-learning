@@ -15,8 +15,8 @@ writer_dir = {
     'wandb': wandb
 }
 
-def init_logger(config):
-    log_dir = get_logdir(config, stamping=True)
+def init_logger(config, seed):
+    log_dir = get_logdir(config, seed, stamping=False)
     logger = config['LOGGING']['logger']
     
     assert logger in writer_dir, f"Logger {logger} not found"

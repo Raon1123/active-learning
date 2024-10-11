@@ -20,7 +20,8 @@ from toolkits.logging import (
 )
 from toolkits.toolkit import (
     is_path,
-    load_config
+    load_config,
+    seed_fixing
 )
 
 
@@ -39,11 +40,8 @@ def get_args():
     return args
 
 
-def main():
-    args = get_args()
-    config = load_config(args.config)
-    verbose = args.verbose
-    writer, log_dir = init_logger(config)
+def main(seed=42):
+    writer, log_dir = init_logger(config, seed)
     
     train_dataset, test_dataset = get_dataset(config)
     model = get_model(config).to(config['DEVICE'])
@@ -73,4 +71,13 @@ def main():
             print(f"Round {round+1}: Train Loss: {train_loss}, Test Loss: {test_loss}, Test Accuracy: {test_acc}")
     
 if __name__ == "__main__":
-    main()
+    args = get_args()
+    config = load_config(args.config)
+    verbose = args.verbose
+    
+    seeds = config['seeds']
+    
+    for seed in seeds:
+        seed_fixing(seed)
+        print("SEED: ", seed)
+        main(seed)

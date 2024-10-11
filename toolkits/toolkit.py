@@ -1,5 +1,7 @@
 import os
 
+import numpy as np
+import torch
 import yaml
 
 def is_path(path):
@@ -15,3 +17,12 @@ def load_config(config_path):
         config = yaml.load(f, Loader=yaml.FullLoader)
     
     return config
+
+
+def seed_fixing(seed):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ['PYTHONHASHSEED'] = str(seed)
