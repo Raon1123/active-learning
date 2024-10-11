@@ -1,3 +1,4 @@
+import torch.nn as nn
 import tqdm
 
 def run_round(train_loader, test_loader, model, optimizer, config):
@@ -18,11 +19,12 @@ def run_epoch(train_loader, model, optimizer, device='cuda'):
     for batch in train_loader:
         data, target = batch
         data, target = data.to(device), target.to(device)
-        data = data.view(data.size(0), -1)
+        #data = data.view(data.size(0), -1)
         optimizer.zero_grad()
         
         output = model(data)
-        loss = model.loss(output, target)
+        #loss = model.loss(output, target)
+        loss = nn.CrossEntropyLoss()(output, target)
         loss.backward()
         
         optimizer.step()
@@ -40,10 +42,10 @@ def run_test_epoch(test_loader, model, device='cuda'):
     for batch in test_loader:
         data, target = batch
         data, target = data.to(device), target.to(device)
-        data = data.view(data.size(0), -1)
+        #data = data.view(data.size(0), -1)
         
         output = model(data)
-        loss = model.loss(output, target)
+        loss = nn.CrossEntropyLoss()(output, target)
         
         cum_loss += loss.item()
         cum_correct += (output.argmax(dim=1) == target).sum().item()

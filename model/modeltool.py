@@ -1,10 +1,17 @@
-import torch
+import torch.nn as nn
 import torch.optim as optim
+from torchvision import models
 
 from model.mlp import MLP
 
+PRETRAIN_TAG = ['resnet']
+
 model_dict = {
     'mlp': MLP,
+    'resnet18': models.resnet18,
+    'resnet34': models.resnet34,
+    'resnet50': models.resnet50,
+    'resnet101': models.resnet101,
 }
 
 optim_dict = {
@@ -19,6 +26,12 @@ def get_model(config):
     
     model_config = config['MODEL']['model_config']
     model = model_dict[model_name](**model_config)
+    
+    if any([tag in model_name for tag in PRETRAIN_TAG]):
+        # change the last layer to fit the number of classes
+        num_classes = config['DATASET']['num_classes']
+        in_features = model.fc.in_features
+        model.fc = nn.Linear(in_features, num_classes)
     
     return model
 
